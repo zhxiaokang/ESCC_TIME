@@ -1,5 +1,5 @@
 # Data folder with large files
-data/
+large_files/
 
 # Mac system file
 .DS_Store
