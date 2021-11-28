@@ -5,6 +5,8 @@ rm(list=ls())
 # library(RTCGAToolbox)
 library(dplyr)
 library(DESeq2)
+library(EnhancedVolcano)
+library(stringr)
 
 setwd('/Users/xiaokangzhang/github/ESCC_TIME/scripts/')
 
@@ -62,3 +64,41 @@ save(dea.E2F, dea, deg, gene.deg, df.exp.inter.round, cluster, file = paste0(dir
 write.csv(dea.E2F, file = paste0(dir.output, "/dea_E2F_family.csv"))
 write.csv(dea, file = paste0(dir.output, "/dea.csv"))
 write.csv(deg, file = paste0(dir.output, "/deg.csv"))
+
+# visualization with Vocano plot and Heatmap
+# volcano plot
+dea.table.volcano <- dea  # for better volcano plot, 0 FDRs/padj will be changed to a very low value
+
+# change the 0 padj to a low value (100 times smaller than the minumum non-zero value)
+padj <- dea.table.volcano$padj
+padj.min.non.zero <- min(padj[padj>0])
+dea.table.volcano$padj[padj==0] <- padj.min.non.zero/100
+## define the range of x-axis and y-axis
+log2FC_lim <- c(log2(1/1.5) - 1, log2(1.5) + 1)
+padj_lim <- -log10(min(dea.table.volcano$padj)) # NAs already removed from dea.table
+
+fig.volcano <- EnhancedVolcano(dea.table.volcano, lab = gene.dea, xlab = bquote(~Log[2]~ "fold change"), x = 'log2FoldChange', y = 'padj', pCutoff = 0.05, col = c("grey30", "orange2", "royalblue", "red2"),
+                               FCcutoff = log2(1.5), xlim = log2FC_lim, ylim = c(0, padj_lim), title = NULL, subtitle = NULL,
+                               # highlight E2F7 gene
+                               selectLab = "E2F7")
+
+pdf(file = file.path(dir.output, 'volcano_plot.pdf'), width = 9, height = 8)
+print(fig.volcano)
+dev.off()
+
+# Heatmap
+## draw heatmap
+df.heatmap <- df.exp.inter[, gene.deg[1:500]]
+
+palette <- c("#999999", "#377EB8")
+palette.group <- str_replace(group, "good", "#999999")
+palette.group <- str_replace(palette.group, "bad", "#377EB8")
+
+pdf(file = file.path(dir.output, 'heatmap.pdf'), width = 15, height = 12, title = 'Heatmap using the top features')
+heatmap(t(df.heatmap), ColSideColors = palette.group, margins = c(9,5.5), labRow = gene.deg[1:500], cexRow = 1.9, cexCol = 1.9)
+legend("topleft", title = 'Group', legend=group, text.font = 15,
+       col = palette, fill = palette, cex=1.8)
+dev.off()
+
+
+
