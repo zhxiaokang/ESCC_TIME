@@ -9,11 +9,11 @@ We downloaded both the clinical information and the gene expression data (from R
 
 Based on the gene expression data, using the method xCell (Aran et al. 2017) embedded in the package `immunedeconv` (Sturm et al. 2020), we inferred the proportions of immune and stromal cell types, and also immune and stroma scores. With the immune microenvironment characteristics, using consensus clustering, the patients were grouped into two clusters. The Kaplan-Meier plot (Fig. 1) on the patients' overall survival showed that there is a significant difference between the two groups (p-value=0.0064 by log-rank test). We can say that there are two subtypes of ESCC based on the immune microenvironment landscape.
 
-![Figure 1](output/tcga_escc_best_clustering_based_on_xcell/survival_curve_between_2_clusters.pdf)
+![Figure 1](output/tcga_escc_best_clustering_based_on_xcell/survival_curve_between_2_clusters.png)
 
 We then ran a differencial expression analysis between the two subtypes using `DESeq2`, using the threshold of adjusted P-value < 0.05 and fold change either > 1.5 or < 0.667, 1505 genes are significantly differentially expressed. The volcano plot is shown as Fig. 2. E2F7 is down-regulated with log2(FoldChange) of -0.74 and adjusted P-value of 0.0086.
 
-![image](output/tcga_escc_DEA/volcano_plot.pdf)
+![image](output/tcga_escc_DEA/volcano_plot.png)
 
 ## References
 
