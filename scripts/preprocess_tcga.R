@@ -27,6 +27,7 @@ patient.ids.clinical <- make.names(rownames(df.clinical.escc))
 row.names(df.clinical.escc) <- patient.ids.clinical
 # 96 5
 df.clinical.escc <- filter(df.clinical.escc, OS_MONTHS > 1) # only keep patients with OS_MONTH > 1
+patient.ids.clinical <- make.names(rownames(df.clinical.escc))
 dim(df.clinical.escc)
 # 91 5
 
