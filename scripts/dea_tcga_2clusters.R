@@ -10,13 +10,13 @@ library(stringr)
 
 setwd('/Users/xiaokangzhang/github/ESCC_TIME/scripts/')
 
-dir.output <- "/Users/xiaokangzhang/github/ESCC_TIME/output/tcga_escc_DEA/"
+dir.output <- "/Users/xiaokangzhang/github/ESCC_TIME/output/tcga_esca_DEA/"
 
 # load the original data
-load("/Users/xiaokangzhang/github/ESCC_TIME/data/esca_tcga/escc_tcga.RData")
+load("/Users/xiaokangzhang/github/ESCC_TIME/data/esca_tcga/esca_tcga.RData")
 
 # Load the clustering info
-load('/Users/xiaokangzhang/github/ESCC_TIME/output/tcga_escc_best_clustering_based_on_xcell/clustering_tcga.RData')
+load('/Users/xiaokangzhang/github/ESCC_TIME/output/tcga_esca_best_clustering_based_on_xcell/clustering_tcga.RData')
 
 # Pick out the common patients
 id.inter <- intersect(rownames(df.exp.inter), rownames(res.deconv.sample))
@@ -60,10 +60,10 @@ gene.deg <- rownames(deg)
 index.E2F <- grep(pattern = "^E2F", x = gene.dea)
 dea.E2F <- dea[index.E2F, ]
 
-save(dea.E2F, dea, deg, gene.deg, df.exp.inter.round, cluster, file = paste0(dir.output, "/dea_tcga_deseq2.RData"))
-write.csv(dea.E2F, file = paste0(dir.output, "/dea_E2F_family.csv"))
-write.csv(dea, file = paste0(dir.output, "/dea.csv"))
-write.csv(deg, file = paste0(dir.output, "/deg.csv"))
+save(dea.E2F, dea, deg, gene.deg, df.exp.inter.round, cluster, file = file.path(dir.output, "dea_tcga_deseq2.RData"))
+write.csv(dea.E2F, file = file.path(dir.output, "dea_E2F_family.csv"))
+write.csv(dea, file = file.path(dir.output, "dea.csv"))
+write.csv(deg, file = file.path(dir.output, "deg.csv"))
 
 # visualization with Vocano plot and Heatmap
 # volcano plot
@@ -80,7 +80,7 @@ padj_lim <- -log10(min(dea.table.volcano$padj)) # NAs already removed from dea.t
 fig.volcano <- EnhancedVolcano(dea.table.volcano, lab = gene.dea, xlab = bquote(~Log[2]~ "fold change"), x = 'log2FoldChange', y = 'padj', pCutoff = 0.05, col = c("grey30", "orange2", "royalblue", "red2"),
                                FCcutoff = log2(1.5), xlim = log2FC_lim, ylim = c(0, padj_lim), title = NULL, subtitle = NULL,
                                # highlight E2F7 gene
-                               selectLab = "E2F7")
+                               selectLab = "E2F4")
 
 pdf(file = file.path(dir.output, 'volcano_plot.pdf'), width = 9, height = 8)
 print(fig.volcano)

@@ -12,8 +12,8 @@ setwd("/Users/xiaokangzhang/github/ESCC_TIME/scripts/")
 
 # load the data
 dir.data <- "/Users/xiaokangzhang/github/ESCC_TIME/data/esca_tcga/"
-dir.out <- "/Users/xiaokangzhang/github/ESCC_TIME/output/"
-load(paste0(dir.data, "/escc_tcga.RData"))
+dir.out <- "/Users/xiaokangzhang/github/ESCC_TIME/output/esca"
+load(paste0(dir.data, "/esca_tcga.RData"))
 
 res.deconv <- deconvolute(t(df.exp.inter), "epic", tumor = TRUE)
 res.deconv.epic <- column_to_rownames(res.deconv, colnames(res.deconv)[1])
@@ -38,7 +38,7 @@ res.deconv.cibersort <- column_to_rownames(res.deconv, colnames(res.deconv)[1])
 
 # ============ Loop through all the possibilities ============
 
-setwd("/Users/xiaokangzhang/github/ESCC_TIME/output/Consensus_clustering_loop_through/")
+setwd("/Users/xiaokangzhang/github/ESCC_TIME/output/esca/Consensus_clustering_loop_through/")
 
 deconv.methods <- list(res.deconv.epic, res.deconv.quantiseq, res.deconv.timer, res.deconv.mcp_counter, res.deconv.xcell, res.deconv.cibersort)
 deconv.methods.names <- c("res.deconv.epic", "res.deconv.quantiseq", "res.deconv.timer", "res.deconv.mcp_counter", "res.deconv.xcell", "res.deconv.cibersort")

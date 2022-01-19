@@ -10,13 +10,13 @@ library(survminer)
 
 setwd('/Users/xiaokangzhang/github/ESCC_TIME/scripts')
 
-load("/Users/xiaokangzhang/github/ESCC_TIME/data/esca_tcga/escc_tcga.RData")
+load("/Users/xiaokangzhang/github/ESCC_TIME/data/esca_tcga/esca_tcga.RData")
 # Data included: df.clinical.inter, df.exp.inter, df.merge
 
-dir.output <- "/Users/xiaokangzhang/github/ESCC_TIME/output/tcga_escc_best_clustering_based_on_xcell/"
+dir.output <- "/Users/xiaokangzhang/github/ESCC_TIME/output/tcga_esca_best_clustering_based_on_quantiseq/"
 
 # Pick the best set
-res.deconv <- deconvolute(t(df.exp.inter), "xcell")
+res.deconv <- deconvolute(t(df.exp.inter), "quantiseq", tumor = TRUE)
 res.deconv <- column_to_rownames(res.deconv, colnames(res.deconv)[1])
 
 # Scale: z-score transformation --- 0 mean 1 deviation
@@ -24,16 +24,16 @@ res.deconv.scale <- t(scale(t(res.deconv)))
 
 # Clustering
 results <- ConsensusClusterPlus(as.matrix(res.deconv.scale), maxK=6, reps=1000, pItem=0.8, pFeature=1, title="Consensus_clustering", 
-                                clusterAlg="pam", distance="pearson", seed=123456, plot=NULL)
+                                clusterAlg="pam", distance="pearson", innerLinkage = "average", seed=123456, plot=NULL)
 
 # ======== Survival analysis with 3 clusters (but merge 2 clusters) =============
 res.deconv.sample <- as.data.frame(t(res.deconv.scale))
-res.deconv.sample$cluster <- unname(results[[3]][["consensusClass"]])
+res.deconv.sample$cluster <- unname(results[[2]][["consensusClass"]])
 
 # Merge cluster 1 and 2
-cluster <- unname(results[[3]][["consensusClass"]])
-cluster[which(cluster == "1" | cluster == "3")] <- "bad"
-cluster[which(cluster == "2")] <- "good"
+cluster <- unname(results[[2]][["consensusClass"]])
+cluster[which(cluster == "1")] <- "good"
+cluster[which(cluster == "2")] <- "bad"
 
 res.deconv.sample$cluster <- cluster
 
