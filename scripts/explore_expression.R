@@ -1,16 +1,15 @@
 # Exploration of gene expression, like correlation between interesting genes
 
-# Set dir
-setwd("/Users/xiaokangzhang/github/ESCC_TIME/scripts/")
-
 # load libs
 library(dplyr)
 library(ggplot2)
 library(corrr)
 
 # Load data
-load("/Users/xiaokangzhang/github/ESCC_TIME/data/esca_tcga/escc_tcga.RData")
-dir.out <- "/Users/xiaokangzhang/github/ESCC_TIME/output/"
+load("./data/esca_tcga/esca_tcga.RData")
+dir.out <- "./output/esca"
+
+dir.create(dir.out)
 
 # # ====== gene expression of E2F family genes =======
 # df.exp.e2f <- select(df.exp.inter, starts_with("E2F"))
@@ -40,3 +39,23 @@ ggplot(data = df.corr.e2f7.with.chemokine, aes(x = chem, y = pearson)) +
   coord_flip()
 
 dev.off()
+
+# ======= correlation between E2F7 and interleukins genes ============
+df.interleukins <- select(df.exp.inter, starts_with("IL"))
+exp.e2f7 <- select(df.exp.inter, c(E2F7))
+
+corr.e2f7.with.interleukins <- cor(exp.e2f7, df.interleukins, method = "pearson")
+
+df.corr.e2f7.with.interleukins <- data.frame(chem = colnames(corr.e2f7.with.interleukins), pearson = corr.e2f7.with.interleukins[1, ])
+
+pdf(file = file.path(dir.out, "corr_interleukins_e2f7.pdf"), height = 12)
+
+ggplot(data = df.corr.e2f7.with.interleukins, aes(x = chem, y = pearson)) +
+  geom_bar(stat = "identity") +
+  labs(x = "interleukins genes", y = "Pearson correlaton", title = "Correlation between E2F7 and interleukins genes") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  coord_flip()
+
+dev.off()
+
+

@@ -1,6 +1,6 @@
 # simple Survival analysis
 
-load("/Users/xiaokangzhang/github/ESCC_TIME/data/esca_tcga/esca_tcga.RData")
+load("./data/esca_tcga/esca_tcga.RData")
 
 df.e2f7 <- select(df.merge, c(OS_MONTHS, OS_STATUS, DFS_MONTHS, DFS_STATUS, E2F7))
 

@@ -5,10 +5,10 @@ rm(list=ls())
 library(survival)
 library(survminer)
 
-setwd("/Users/xiaokangzhang/github/ESCC_TIME/scripts/")
-dir.output <- "/Users/xiaokangzhang/github/ESCC_TIME/output/E2F_surv/"
+dir.output <- "./output/esca"
+dir.create(dir.output)
 
-load("/Users/xiaokangzhang/github/ESCC_TIME/data/esca_tcga/escc_tcga.RData")
+load("./data/esca_tcga/esca_tcga.RData")
 # include data: df.merge, df.clinical.inter, df.exp.inter
 
 # use df.merge
@@ -29,7 +29,7 @@ plot_surv <- function(df.surv, gene.list, time.name = "OS_MONTHS", event.name = 
     gene <- gene.list[i]
     forml <- paste0("Surv(", time.name, ", ", event.name, ") ~ ", gene)
     
-    km.fit <- survfit(as.formula(forml), data=res.cat)
+    km.fit <- survminer::surv_fit(as.formula(forml), data=res.cat)
     p.surv <- ggsurvplot(km.fit, pval = TRUE, risk.table = TRUE, ncensor.plot = FALSE)
     
     print(p.surv)
