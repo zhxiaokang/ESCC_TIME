@@ -12,13 +12,10 @@ load("./data/esca_tcga/esca_tcga.RData")
 # include data: df.merge, df.clinical.inter, df.exp.inter
 
 # use df.merge
-df.surv <- df.merge %>% select(c("OS_STATUS", "OS_MONTHS"), starts_with("E2F"))
+df.surv <- df.merge %>% select(c("OS_STATUS", "OS_MONTHS", "DFS_STATUS", "DFS_MONTHS"), starts_with("E2F"), c("CCL7", "CCL8"))
 
 # define the function to draw surv curves
-time.name = "OS_MONTHS"
-event.name = "OS_STATUS"
-
-plot_surv <- function(df.surv, gene.list, time.name = "OS_MONTHS", event.name = "OS_STATUS") {
+plot_surv <- function(df.surv, gene.list, time.name = time.name, event.name = event.name) {
   ## best cutpoint for each gene
   res.cut <- surv_cutpoint(df.surv, time = time.name, event = event.name, gene.list)
   
@@ -36,12 +33,43 @@ plot_surv <- function(df.surv, gene.list, time.name = "OS_MONTHS", event.name = 
   }
 }
 
+# ======== overall survival ==========
+time.name = "OS_MONTHS"
+event.name = "OS_STATUS"
 # prepare the df.surv
 df.surv$OS_MONTHS <- as.numeric(df.surv$OS_MONTHS)
 df.surv$OS_STATUS <- 1*(df.surv$OS_STATUS=="1:DECEASED")
 
-# draw surv curve for TCGA
+# draw OS surv curve for E2F genes
 gene.list <- names(df.surv)[grep("^E2F", names(df.surv))]
-pdf(paste0(dir.output, "/E2F_genes_surv.pdf"))
-plot_surv(df.surv, gene.list, time.name = "OS_MONTHS", event.name = "OS_STATUS")
+pdf(paste0(dir.output, "/E2F_genes_OS_surv.pdf"))
+plot_surv(df.surv, gene.list, time.name = time.name, event.name = event.name)
+dev.off()
+
+# draw OS surv curve for genes CCL7, CCL8
+gene.list <- names(df.surv)[grep("^CCL", names(df.surv))]
+pdf(paste0(dir.output, "/CCL_genes_OS_surv.pdf"))
+plot_surv(df.surv, gene.list, time.name = time.name, event.name = event.name)
+dev.off()
+
+
+# ========= DFS/PFS ==========
+time.name = "DFS_MONTHS"
+event.name = "DFS_STATUS"
+# prepare the df.surv
+## remove the patients without DFS info
+df.surv <- filter(df.surv, DFS_MONTHS > 0.1)
+df.surv$DFS_MONTHS <- as.numeric(df.surv$DFS_MONTHS)
+df.surv$DFS_STATUS <- 1*(df.surv$DFS_STATUS=="1:Recurred/Progressed")
+
+# draw DFS surv curve for E2F genes
+gene.list <- names(df.surv)[grep("^E2F", names(df.surv))]
+pdf(paste0(dir.output, "/E2F_genes_DFS_surv.pdf"))
+plot_surv(df.surv, gene.list, time.name = time.name, event.name = event.name)
+dev.off()
+
+# draw DFS surv curve for TCGA
+gene.list <- names(df.surv)[grep("^CCL", names(df.surv))]
+pdf(paste0(dir.output, "/CCL_genes_DFS_surv.pdf"))
+plot_surv(df.surv, gene.list, time.name = time.name, event.name = event.name)
 dev.off()
