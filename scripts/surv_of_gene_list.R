@@ -2,6 +2,7 @@
 
 rm(list=ls())
 
+library(dplyr)
 library(survival)
 library(survminer)
 
@@ -13,6 +14,9 @@ load("./data/esca_tcga/esca_tcga.RData")
 
 # use df.merge
 df.surv <- df.merge %>% select(c("OS_STATUS", "OS_MONTHS", "DFS_STATUS", "DFS_MONTHS"), starts_with("E2F"), c("CCL7", "CCL8", "CCR5"))
+
+# sum up the expression values of CCL7 & CCL8
+df.surv$CCL7_8 <- df.surv$CCL7 + df.surv$CCL8
 
 # define the function to draw surv curves
 plot_surv <- function(df.surv, gene.list, time.name = time.name, event.name = event.name) {
@@ -47,6 +51,12 @@ plot_surv(df.surv, gene.list, time.name = time.name, event.name = event.name)
 dev.off()
 
 # draw OS surv curve for genes CCL7, CCL8
+gene.list <- "CCL7_8"
+pdf(paste0(dir.output, "/CCL7_and_8_genes_OS_surv.pdf"))
+plot_surv(df.surv, gene.list, time.name = time.name, event.name = event.name)
+dev.off()
+
+# draw OS surv curve for genes CCL7 + CCL8
 gene.list <- names(df.surv)[grep("^CCL", names(df.surv))]
 pdf(paste0(dir.output, "/CCL_genes_OS_surv.pdf"))
 plot_surv(df.surv, gene.list, time.name = time.name, event.name = event.name)
@@ -77,6 +87,12 @@ dev.off()
 # draw DFS surv curve for CCL7 and CCL8
 gene.list <- names(df.surv)[grep("^CCL", names(df.surv))]
 pdf(paste0(dir.output, "/CCL_genes_DFS_surv.pdf"))
+plot_surv(df.surv, gene.list, time.name = time.name, event.name = event.name)
+dev.off()
+
+# draw DFS surv curve for CCL7 + CCL8
+gene.list <- "CCL7_8"
+pdf(paste0(dir.output, "/CCL7_and_8_genes_DFS_surv.pdf"))
 plot_surv(df.surv, gene.list, time.name = time.name, event.name = event.name)
 dev.off()
 
